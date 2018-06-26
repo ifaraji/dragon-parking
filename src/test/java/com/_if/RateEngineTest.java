@@ -14,6 +14,7 @@ public class RateEngineTest {
 	private final String EARLY_BIRD = "EarlyBird";
 	private final String WEEKEND_RATE = "WeekendRate";
 	private final String NIGHT_RATE = "NightRate";
+	private final String STANDARD_RATE = "StandardRate";
 	
 	@Before
 	public void init(){
@@ -57,5 +58,18 @@ public class RateEngineTest {
 		
 		Rate rate = engine.calculate(entry, exit);
 		Assert.assertTrue(rate.getName().equals(NIGHT_RATE));
+	}
+	
+	@Test
+	public void testIsStandardRate(){
+		Calendar entry = Calendar.getInstance();
+		entry.clear();
+		entry.set(2018, 5, 15, 19, 0); //Friday 7pm 
+		Calendar exit = Calendar.getInstance();
+		exit.clear();
+		exit.set(2018, 5, 18, 5, 0); //Monday 5am
+		
+		Rate rate = engine.calculate(entry, exit);
+		Assert.assertTrue(rate.getName().equals(STANDARD_RATE));
 	}
 }
