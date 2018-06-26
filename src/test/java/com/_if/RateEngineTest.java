@@ -36,10 +36,10 @@ public class RateEngineTest {
 	public void testIsWeekendRate(){
 		Calendar entry = Calendar.getInstance();
 		entry.clear();
-		entry.set(2018, 5, 23);
+		entry.set(2018, 5, 16);
 		Calendar exit = Calendar.getInstance();
 		exit.clear();
-		exit.set(2018, 5, 24);
+		exit.set(2018, 5, 17);
 		
 		Rate rate = engine.calculate(entry, exit);
 		Assert.assertTrue(rate.getName().equals(WEEKEND_RATE));
