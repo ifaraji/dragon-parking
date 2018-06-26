@@ -12,6 +12,7 @@ public class RateEngineTest {
 
 	RateEngine engine;
 	private final String EARLY_BIRD = "EarlyBird";
+	private final String WEEKEND_RATE = "WeekendRate";
 	
 	@Before
 	public void init(){
@@ -29,5 +30,18 @@ public class RateEngineTest {
 		
 		Rate rate = engine.calculate(entry, exit);
 		Assert.assertTrue(rate.getName().equals(EARLY_BIRD));
+	}
+	
+	@Test
+	public void testIsWeekendRate(){
+		Calendar entry = Calendar.getInstance();
+		entry.clear();
+		entry.set(2018, 5, 23);
+		Calendar exit = Calendar.getInstance();
+		exit.clear();
+		exit.set(2018, 5, 24);
+		
+		Rate rate = engine.calculate(entry, exit);
+		Assert.assertTrue(rate.getName().equals(WEEKEND_RATE));
 	}
 }
