@@ -13,6 +13,7 @@ public class RateEngine {
 	
 	private final String EARLY_BIRD = "EarlyBird";
 	private final String WEEKEND_RATE = "WeekendRate";
+	private final String NIGHT_RATE = "NightRate";
 	
 	public Rate calculate(Calendar entry, Calendar exit){
 		Rate rate = null;
@@ -22,7 +23,10 @@ public class RateEngine {
 		else if (isWeekendRate(entry, exit)) {
 			rate = new Rate(WEEKEND_RATE, 13d);
 		}
-			
+		else if (isNightRate(entry, exit)) {
+			rate = new Rate(NIGHT_RATE, 18d);
+		}
+		
 		return rate;
 	}
 	
@@ -71,8 +75,31 @@ public class RateEngine {
 			if (exitDay == Calendar.SATURDAY || exitDay == Calendar.SUNDAY)
 				//entry and exit on the same weekend!
 				if (entry.get(Calendar.YEAR) == exit.get(Calendar.YEAR) && 
-					exit.get(Calendar.DAY_OF_YEAR) - entry.get(Calendar.DAY_OF_YEAR) < 3)
+						exit.get(Calendar.DAY_OF_YEAR) - entry.get(Calendar.DAY_OF_YEAR) < 3)
 					return true;
+		return false;
+	}
+	
+	private boolean isNightRate(Calendar entry, Calendar exit){
+		int entryDay = entry.get(Calendar.DAY_OF_WEEK);
+		int entryHour = entry.get(Calendar.HOUR_OF_DAY);
+		int exitHour = exit.get(Calendar.HOUR_OF_DAY);
+		
+		//entry on a weekday
+		if (entryDay != Calendar.SATURDAY && entryDay != Calendar.SUNDAY) {
+			//entry after 6pm
+			if (entryHour >= 18) {
+				//entry and exit on the same day
+				if (entry.get(Calendar.YEAR) == exit.get(Calendar.YEAR) && 
+						exit.get(Calendar.DAY_OF_YEAR) == entry.get(Calendar.DAY_OF_YEAR))
+					return true;
+				//exit on the following day before 6am
+				if (entry.get(Calendar.YEAR) == exit.get(Calendar.YEAR) && 
+						exit.get(Calendar.DAY_OF_YEAR) - entry.get(Calendar.DAY_OF_YEAR) == 1 &&
+						exitHour < 6)
+					return true;
+			}
+		}
 		return false;
 	}
 }
