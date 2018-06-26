@@ -14,6 +14,7 @@ public class RateEngine {
 	private final String EARLY_BIRD = "EarlyBird";
 	private final String WEEKEND_RATE = "WeekendRate";
 	private final String NIGHT_RATE = "NightRate";
+	private final String STANDARD_RATE = "StandardRate";
 	
 	public Rate calculate(Calendar entry, Calendar exit){
 		Rate rate = null;
@@ -26,6 +27,8 @@ public class RateEngine {
 		else if (isNightRate(entry, exit)) {
 			rate = new Rate(NIGHT_RATE, 18d);
 		}
+		else 
+			rate = getStandardRate(entry, exit);
 		
 		return rate;
 	}
@@ -101,5 +104,52 @@ public class RateEngine {
 			}
 		}
 		return false;
+	}
+	
+	private Rate getStandardRate(Calendar entry, Calendar exit) {
+		//same day entry and exit
+		if (entry.get(Calendar.YEAR) == exit.get(Calendar.YEAR) && 
+				exit.get(Calendar.DAY_OF_YEAR) == entry.get(Calendar.DAY_OF_YEAR)){
+			int hours = exit.get(Calendar.HOUR_OF_DAY) - entry.get(Calendar.HOUR_OF_DAY);
+			double price = 0;
+			if (hours == 0) price = 5; //less than 1 hour
+			else if (hours >= 1 && hours < 2) price = 10; //between 1 and 2 hours
+			else if (hours >= 2 && hours < 3) price = 15; //between 2 and 3 hours
+			else price = 20; // more than 3 hours
+			return new Rate(STANDARD_RATE, price);
+		}
+			
+		int fullDays = fullDaysInBetween(entry, exit);
+		int entryDayHours = 24 - entry.get(Calendar.HOUR_OF_DAY);
+		int exitDayHours = exit.get(Calendar.HOUR_OF_DAY);
+		double price = fullDays * 20; //full days price
+		//entry day price
+		if (entryDayHours == 0) price += 5; //less than 1 hour
+		else if (entryDayHours >= 1 && entryDayHours < 2) price += 10; //between 1 and 2 hours
+		else if (entryDayHours >= 2 && entryDayHours < 3) price += 15; //between 2 and 3 hours
+		else price += 20; // more than 3 hours
+		//exit day price
+		if (exitDayHours == 0) price += 5; //less than 1 hour
+		else if (exitDayHours >= 1 && exitDayHours < 2) price += 10; //between 1 and 2 hours
+		else if (exitDayHours >= 2 && exitDayHours < 3) price += 15; //between 2 and 3 hours
+		else price += 20; // more than 3 hours
+		return new Rate(STANDARD_RATE, price);
+	}
+	
+	private int fullDaysInBetween(Calendar entry, Calendar exit){
+		int entryYear = entry.get(Calendar.YEAR);
+		int entryMonth = entry.get(Calendar.MONTH);
+		int entryDay = entry.get(Calendar.DAY_OF_MONTH);
+		int entryYYYYMMDD = (entryYear * 10000) + (entryMonth * 100) + entryDay;
+		
+		int exitYear = exit.get(Calendar.YEAR);
+		int exitMonth = exit.get(Calendar.MONTH);
+		int exitDay = exit.get(Calendar.DAY_OF_MONTH);
+		int exitYYYYMMDD = (exitYear * 10000) + (exitMonth * 100) + exitDay;
+		
+		int diff = exitYYYYMMDD - entryYYYYMMDD;
+		
+		if (diff <= 1) return 0;
+		return --diff;
 	}
 }

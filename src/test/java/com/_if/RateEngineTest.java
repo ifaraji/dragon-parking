@@ -71,5 +71,6 @@ public class RateEngineTest {
 		
 		Rate rate = engine.calculate(entry, exit);
 		Assert.assertTrue(rate.getName().equals(STANDARD_RATE));
+		Assert.assertTrue(rate.getPrice() == 80);
 	}
 }
